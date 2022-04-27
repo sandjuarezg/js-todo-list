@@ -3,6 +3,7 @@ export default class Model{
     {
         this.view=null;
         this.todos=[];
+        this.currentId=1;
     }
 
     setView(view)
@@ -18,7 +19,7 @@ export default class Model{
     addTodo(title, descripcion)
     {
         const todo={
-            id:0, 
+            id:this.currentId++, 
             title, 
             descripcion, 
             completed: false,
@@ -28,5 +29,11 @@ export default class Model{
 
 
         return {...todo};
+    }
+
+    removeTodo(id) 
+    {
+        const index = this.todos.findIndex((todo) => todo.id === id);
+        this.todos.splice(index, 1);
     }
 }
