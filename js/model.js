@@ -2,8 +2,20 @@ export default class Model{
     constructor()
     {
         this.view=null;
-        this.todos=[];
-        this.currentId=1;
+        this.todos=JSON.parse(localStorage.getItem('todos'));
+        if (!this.todos || this.todos.length < 1) {
+            this.todos = [
+                {
+                    id:0,
+                    title: 'Learn JS',
+                    description: 'Watch JS tutorials',
+                    completed: false,
+                }
+            ]
+            this.currentId=1;
+        } else {
+            this.currentId = this.todos[this.todos.length - 1].id + 1;
+        }
     }
 
     setView(view)
@@ -11,9 +23,13 @@ export default class Model{
         this.view=view;
     }
 
+    save() {
+        localStorage.setItem('todos', JSON.stringify(this.todos));
+    }
+
     getTodos()
     {
-        return this.todos;
+        return this.todos.map((todo) => ({...todo}));
     }
 
     findTodo(id) 
@@ -26,20 +42,26 @@ export default class Model{
         const index = this.findTodo(id);
         const todo = this.todos[index];
         todo.completed = !todo.completed;
-        console.log(this.todos);
+        this.save();
+    }
+    editTodo(id, values){
+        const index = this.findTodo(id);
+        Object.assign(this.todos[index], values);
+        this.save(); 
     }
 
-    addTodo(title, descripcion)
+    addTodo(title, description)
     {
         const todo={
             id:this.currentId++, 
             title, 
-            descripcion, 
+            description, 
             completed: false,
         }
+        
         this.todos.push(todo);
         console.log(this.todos);
-
+        this.save();
 
         return {...todo};
     }
@@ -48,5 +70,6 @@ export default class Model{
     {
         const index = this.findTodo(id);
         this.todos.splice(index, 1);
+        this.save();
     }
 }
